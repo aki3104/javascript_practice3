@@ -5,8 +5,13 @@ const answers = document.getElementById('answers');
 const displayquiz = document.getElementById('displayquiz');
 const category = document.getElementById('category');
 const difficulty = document.getElementById('difficulty');
+let quizes = [];
 let choices = []
 let index = 0;
+let correct_count = 0;
+
+
+
 
 //シャフル関数
 const shuffle = arr => {
@@ -17,69 +22,91 @@ const shuffle = arr => {
   return arr;
 }
 
+
 //問題を表示
 const　trivia = ((arrayTrivias) => {
-  info.textContent =  (`問題 ${index + 1}`)
-  displayquiz.textContent = arrayTrivias.results[index].question
-  category.textContent = (`[ジャンル]　${arrayTrivias.results[index].category}`)
-  difficulty.textContent = (`[難易度]　${arrayTrivias.results[index].difficulty}`)
+  
+  //問題数の上限に行ったら終了する条件分岐
+  if(index === quizes.results.length){
+    info.textContent =  (`正解数は ${ correct_count}です！`);
+    displayquiz.textContent = '再度挑戦する場合はホームに戻るをクリックしてください！'
+    category.textContent = '';
+    difficulty.textContent = '';
+    startBtn.textContent = 'ホームに戻る'
+    startBtn.style.display = '';
+    index = 0;
 
-  //answerarrayに格納
-  choices = arrayTrivias.results[index].incorrect_answers;
-  choices.push(arrayTrivias.results[index].correct_answer);
-
-  // 回答をシャッフル
-  const shuffledChoices = shuffle(choices)
-
-  //回答を表示
-  shuffledChoices.forEach((select_answer) =>{
-    // 回答選択肢
-    const answer = document.createElement('li');
-    const answerBtn = document.createElement('button');
-    answerBtn.className = 'answerBtn';
-    answerBtn.textContent = select_answer;
-    answers.appendChild(answer);
-    answer.appendChild(answerBtn);
-    console.log(arrayTrivias);
-    // console.log(shuffledChoices);
-  })
-  index ++;
-
-  //配列の初期化
-  // choices
-  // shuffledChoices
-
+    //問題数上限までは次の問題を表示する
+  }else{
+    info.textContent =  (`問題 ${index + 1}`);
+    displayquiz.textContent = arrayTrivias.results[index].question;
+    category.textContent = (`[ジャンル]　${arrayTrivias.results[index].category}`);
+    difficulty.textContent = (`[難易度]　${arrayTrivias.results[index].difficulty}`);
+  
+    //正解
+    const correct_answer = arrayTrivias.results[index].correct_answer;
+  
+    //answerarrayに格納
+    choices = arrayTrivias.results[index].incorrect_answers;
+    choices.push(correct_answer);  
+  
+    // 回答をシャッフル
+    const shuffledChoices = shuffle(choices)
+  
+    //回答を表示
+    shuffledChoices.forEach((select_answer) =>{      
+  
+      // 回答選択肢作成、表示
+      const answer = document.createElement('li');
+      const answerBtn = document.createElement('button');
+      answerBtn.textContent = select_answer;
+      answers.appendChild(answer);
+      answer.appendChild(answerBtn);
+  
+      //クリックイベントに追加
+      answerBtn.addEventListener('click',() => {
+        
+        //初期化処理
+        while((choices_length = choices.shift()) !== undefined){
+        }
+        while((cshuffledChoices_length = shuffledChoices.shift()) !== undefined){
+        }
+        answers.textContent = '';
+        
+        //正解を選択した場合
+        if(select_answer === correct_answer){
+          correct_count++;
+        }
+        
+        //表示処理
+        trivia(quizes);
+      })
+      
+    })
+    //問題数のカウントプラス
+    index ++;
+  }
 });
 
 
 
 //開始ボタンクリック
 startBtn.addEventListener('click', () => {
+
+
   //クイズデータを取得、非同期処理
   fetch('https://opentdb.com/api.php?amount=10&type=multiple')
     .then(function(response){
       return response.json();
     })
-
+  //非同期処理２番目
     .then(function(quiz){
-      trivia(quiz);
-      startBtn.style.display = 'none';
+      quizes = quiz;
+      trivia(quizes);
     })
 
-  .then(() => {
-    
-    const choicesBtn = document.querySelectorAll('button.answerBtn')
-    console.log(choicesBtn.value);
-  })
-
-    //同期処理
-    info.textContent = '取得中';
-    displayquiz .textContent = '少々お待ちください'
+  //同期処理
+  startBtn.style.display = 'none';
+  info.textContent = '取得中';
+  displayquiz .textContent = '少々お待ちください'
 });
-
-
-      // quiz.results.forEach((question, index) => {
-      // })
-        // console.log(quiz);
-        // console.log(quiz.results[1].question);
-        // console.log(quiz.results.length);
