@@ -1,0 +1,14 @@
+#displayquiz{
+  border-top: 1px solid #aaa;
+  border-bottom: 1px solid #aaa;
+}
+
+#start{
+  margin-top: 10px;
+}
+
+li{
+  list-style: none;
+  margin-bottom: 10px;
+}
+
