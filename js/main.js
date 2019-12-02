@@ -5,7 +5,6 @@ const answers = document.getElementById('answers');
 const displayquiz = document.getElementById('displayquiz');
 const category = document.getElementById('category');
 const difficulty = document.getElementById('difficulty');
-let choices = [];
 let quizIndex = 0;
 let correctCount = 0;
 
@@ -18,14 +17,13 @@ const shuffle = arr => {
   return arr;
 }
 
-
 //問題を表示
 const　trivia = ((arrayTrivias) => {
   
   //問題数の上限に行ったら終了する条件分岐
   if(quizIndex === arrayTrivias.results.length){
     info.textContent =  (`正解数は ${ correctCount}です！`);
-    displayquiz.textContent = '再度挑戦する場合はホームに戻るをクリックしてください！'
+    displayquiz.textContent = '再度挑戦する場合はホームに戻るをクリックしてください！';
     category.textContent = '';
     difficulty.textContent = '';
     startBtn.textContent = 'ホームに戻る';
@@ -43,11 +41,11 @@ const　trivia = ((arrayTrivias) => {
     const correctAnswer = arrayTrivias.results[quizIndex].correct_answer;
   
     //answerarrayに格納
-    choices = arrayTrivias.results[quizIndex].incorrect_answers;
+    const choices = arrayTrivias.results[quizIndex].incorrect_answers;
     choices.push(correctAnswer);  
-  
+
     // 回答をシャッフル
-    let shuffledChoices = shuffle(choices)
+    const shuffledChoices = shuffle(choices);
   
     //回答を表示
     shuffledChoices.forEach((selectAnswer) =>{
@@ -62,8 +60,6 @@ const　trivia = ((arrayTrivias) => {
       answerBtn.addEventListener('click',() => {
         
         //初期化処理
-       choices = [];
-       shuffledChoices = [];
        answers.textContent = '';
         
         //正解を選択した場合
