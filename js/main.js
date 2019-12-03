@@ -5,13 +5,8 @@ const answers = document.getElementById('answers');
 const displayquiz = document.getElementById('displayquiz');
 const category = document.getElementById('category');
 const difficulty = document.getElementById('difficulty');
-let quizes = [];
-let choices = []
-let index = 0;
-let correct_count = 0;
-
-
-
+let quizIndex = 0;
+let correctCount = 0;
 
 //シャフル関数
 const shuffle = arr => {
@@ -22,87 +17,78 @@ const shuffle = arr => {
   return arr;
 }
 
-
 //問題を表示
 const　trivia = ((arrayTrivias) => {
   
   //問題数の上限に行ったら終了する条件分岐
-  if(index === quizes.results.length){
-    info.textContent =  (`正解数は ${ correct_count}です！`);
-    displayquiz.textContent = '再度挑戦する場合はホームに戻るをクリックしてください！'
+  if(quizIndex === arrayTrivias.results.length){
+    info.textContent =  (`正解数は ${ correctCount}です！`);
+    displayquiz.textContent = '再度挑戦する場合はホームに戻るをクリックしてください！';
     category.textContent = '';
     difficulty.textContent = '';
-    startBtn.textContent = 'ホームに戻る'
+    startBtn.textContent = 'ホームに戻る';
     startBtn.style.display = '';
-    index = 0;
+    quizIndex = 0;
 
     //問題数上限までは次の問題を表示する
   }else{
-    info.textContent =  (`問題 ${index + 1}`);
-    displayquiz.textContent = arrayTrivias.results[index].question;
-    category.textContent = (`[ジャンル]　${arrayTrivias.results[index].category}`);
-    difficulty.textContent = (`[難易度]　${arrayTrivias.results[index].difficulty}`);
+    info.innerHTML =  (`問題 ${quizIndex + 1}`);
+    displayquiz.textContent = arrayTrivias.results[quizIndex].question;
+    category.textContent = (`[ジャンル]　${arrayTrivias.results[quizIndex].category}`);
+    difficulty.textContent = (`[難易度]　${arrayTrivias.results[quizIndex].difficulty}`);
   
     //正解
-    const correct_answer = arrayTrivias.results[index].correct_answer;
+    const correctAnswer = arrayTrivias.results[quizIndex].correct_answer;
   
     //answerarrayに格納
-    choices = arrayTrivias.results[index].incorrect_answers;
-    choices.push(correct_answer);  
-  
+    const choices = arrayTrivias.results[quizIndex].incorrect_answers;
+    choices.push(correctAnswer);  
+
     // 回答をシャッフル
-    const shuffledChoices = shuffle(choices)
+    const shuffledChoices = shuffle(choices);
   
     //回答を表示
-    shuffledChoices.forEach((select_answer) =>{      
-  
+    shuffledChoices.forEach((selectAnswer) =>{
       // 回答選択肢作成、表示
       const answer = document.createElement('li');
       const answerBtn = document.createElement('button');
-      answerBtn.textContent = select_answer;
+      answerBtn.textContent = selectAnswer;
       answers.appendChild(answer);
       answer.appendChild(answerBtn);
-  
+
       //クリックイベントに追加
       answerBtn.addEventListener('click',() => {
         
         //初期化処理
-        while((choices_length = choices.shift()) !== undefined){
-        }
-        while((cshuffledChoices_length = shuffledChoices.shift()) !== undefined){
-        }
-        answers.textContent = '';
+       answers.textContent = '';
         
         //正解を選択した場合
-        if(select_answer === correct_answer){
-          correct_count++;
-        }
-        
-        //表示処理
-        trivia(quizes);
-      })
+      if(selectAnswer === correctAnswer){
+        correctCount++;
+      }
       
+      //表示処理
+      trivia(arrayTrivias);
+      })
     })
+
     //問題数のカウントプラス
-    index ++;
+    quizIndex ++;
   }
 });
 
-
-
 //開始ボタンクリック
 startBtn.addEventListener('click', () => {
-
 
   //クイズデータを取得、非同期処理
   fetch('https://opentdb.com/api.php?amount=10&type=multiple')
     .then(function(response){
       return response.json();
     })
+
   //非同期処理２番目
     .then(function(quiz){
-      quizes = quiz;
-      trivia(quizes);
+      trivia(quiz);
     })
 
   //同期処理
